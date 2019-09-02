@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Testing out first game</title>
+
+    <style>
+        
+        
+        body {
+            background-image: url("flappyBird.png");
+            background-repeat: repeat-x;
+            background-size: cover;
+            overflow-y: hidden;
+        }
+
+        input {
+          display: none;
+          background-color: red;
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          position:absolute;
+          bottom:100px;
+        }
+
+        p {
+          position: relative;
+          bottom:900px;
+          font-family: "Times New Roman", Times, serif;
+          font-size: 40px;
+        }
+
+
+
+    </style>
+
+   
+</head>
+<body onload="startGame()">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+</script>
+<script >
+
+var myGamePiece;
+var myObstacles = [];
+var myScore;
+var bombImage=[];
+
+var gameOver = false;
+
+var birdImage=[];
+
+var birdImage2=[];
+
+var cartoonBox=[];
+
+var anotherBox=[];
+
+function startGame() {
+    myGamePiece = new component(40, 40, "luigi.png",10,120,"image");
+    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+    myBackground = new component(window.innerWidth - 10,800, "flappyBird.png", 0, 0, "background")
+    myGameArea.start();
+}
+
+
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = window.innerWidth - 10;
+        this.canvas.height = window.innerHeight;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0; 
+        this.interval = setInterval(updateGameArea, 20);
+        window.addEventListener('keydown', function (e) {
+           
+            myGameArea.key = e.keyCode;
+        })
+        window.addEventListener('keyup', function (e) {
+            myGameArea.key = false;
+        })
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+
+    stop : function() {
+        clearInterval(this.interval);
+  }
+}
+
+function everyinterval(n) {
+  if ((myGameArea.frameNo / n) % 1 == 0) {
+    return true;
+  }
+  return false;
+}
+
+
+
+function component(width, height, color, x, y, type) {
+    this.type = type;
+
+    if (type == "image") {
+    this.image = new Image();
+    this.image.src = color;
+  }
+
+    this.width = width;
+    this.height = height;
+    this.speedX = 0;
+    this.speedY = 0;    
+    this.x = x;
+    this.y = y;    
+    this.update = function() {
+        ctx = myGameArea.context;
+        if (this.type == "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = color;
+            ctx.fillText(this.text, this.x, this.y);
+       } 
+
+       else if (type == "image") {
+        ctx.drawImage(this.image, 
+        this.x, 
+        this.y,
+        this.width, this.height);
+
+        
+       }
+       else {
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+    this.newPos = function() {
+        this.x += this.speedX;
+        this.y += this.speedY;        
+    }
+
+    this.crashWith = function(otherobj) {
+    var myleft = this.x;
+    var myright = this.x + (this.width);
+    var mytop = this.y;
+    var mybottom = this.y + (this.height);
+    var otherleft = otherobj.x;
+    var otherright = otherobj.x + (otherobj.width);
+    var othertop = otherobj.y;
+    var otherbottom = otherobj.y + (otherobj.height);
+    var crash = true;
+    if ((mybottom < othertop) ||
+    (mytop > otherbottom) ||
+    (myright < otherleft) ||
+    (myleft > otherright)) {
+      crash = false;
+    } else if (crash == true) {
+      return crash;
+      gameOver=true;
+    }
+
+  }
+        
+}
+
+
+
+function updateGameArea() {
+    //myGameArea.clear();
+ 
+    
+    
+
+
+
+var x, y, r;
+r = document.getElementById("reset");
+  for (i = 0; i < myObstacles.length ; i += 1) {
+    if (myGamePiece.crashWith(myObstacles[i])) {
+      myGameArea.stop();
+      
+      text("Game Over", "75px italic ", 200, 300, "#ff99cc");
+      r.style.display = "block";
+      return;
+    }
+  }
+
+  for(i = 0; i < bombImage.length; i+=1) {
+      if (myGamePiece.crashWith(bombImage[i])) {
+        myGameArea.stop();
+      
+        text("Game Over", "75px italic ", 200, 300, "#ff99cc");
+        r.style.display = "block";
+       
+        return;
+      }
+    }
+
+    for(i = 0; i < birdImage.length; i+=1) {
+      if (myGamePiece.crashWith(birdImage[i])) {
+        myGameArea.stop();
+      
+        text("Game Over", "75px italic ", 200, 300, "#ff99cc");
+        r.style.display = "block";
+        return;
+      }
+    }
+
+    for (i=0;i < birdImage2.length; i++) {
+      if (myGamePiece.crashWith(birdImage2[i])) {
+        myGameArea.stop();
+      
+        text("Game Over", "75px italic ", 200, 300, "#ff99cc");
+        r.style.display = "block";
+        return;
+      }
+    }
+
+    for (i=0;i < cartoonBox.length; i++) {
+      if (myGamePiece.crashWith(cartoonBox[i])) {
+        myGameArea.stop();
+      
+        text("Game Over", "75px italic ", 200, 300, "#ff99cc");
+        r.style.display = "block";
+        return;
+      }
+    }
+
+    for (i=0;i < anotherBox.length; i++) {
+      if (myGamePiece.crashWith(anotherBox[i])) {
+        myGameArea.stop();
+      
+        text("Game Over", "75px italic ", 200, 300, "#ff99cc");
+        r.style.display = "block";
+        return;
+      }
+    }
+
+     
+
+
+  myGameArea.clear();
+  myGameArea.frameNo += 1;
+  if (myGameArea.frameNo == 1 || everyinterval(150)) {
+    x = myGameArea.canvas.width;
+    minHeight = 20;
+    maxHeight = 200;
+    height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
+    minGap = 50;
+    maxGap = 250;
+    min = Math.ceil(1000);
+    max = Math.floor(window.innerWidth);
+    gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
+    myObstacles.push(new component(40, height, "obstacle.png", x, 0, "image"));
+    myObstacles.push(new component(40, x - height - gap, "obstacle.png", x, height + gap, "image"));
+    bombImage.push(new component(20,20,"bomb.png", Math.floor(Math.random() * (max - min)) + min,   Math.floor((Math.random(10,20) * window.innerWidth- 10) + 1),"image"));
+    birdImage.push(new component(30,30,"angryBird.png",Math.floor(Math.random() * (max - min)) + min, Math.floor((Math.random(10,20) * window.innerWidth- 10) + 1),"image"));
+    birdImage2.push(new component(40,40,"angryBirdPig.jpg", Math.floor(Math.random() * (max - min)) + min, Math.floor((Math.random(10,20) * window.innerWidth- 10) + 1),"image"));
+    cartoonBox.push(new component(50,50,"questionMark.png", Math.floor(Math.random() * (max - min)) + min, Math.floor((Math.random(10,20) * window.innerWidth- 10) + 1),"image"));
+    anotherBox.push(new component(50,50,"bannanaPill.png", Math.floor(Math.random() * (max - min)) + min, Math.floor((Math.random(10,20) * window.innerWidth- 10) + 1),"image"));
+  }
+
+ 
+  for (i = 0; i < myObstacles.length; i += 1) {
+        myObstacles[i].x += -5;
+        myObstacles[i].update();
+
+        
+    if(myGameArea.frameNo >= 1000 && myGameArea.frameNo <= 1800) {
+        myObstacles[i].x += -4;
+        myObstacles[i].update();
+        
+    }
+
+    else if (myGameArea.frameNo > 1800) {
+        myObstacles[i].x += -6;
+        myObstacles[i].update();
+        
+    }
+    }
+
+    for(i=0;i< bombImage.length; i+=1) {
+        bombImage[i].x += -5;
+        bombImage[i].update();
+    
+        if(myGameArea.frameNo >= 1000 && myGameArea.frameNo <= 1800) {
+        bombImage[i].x += -4;
+        bombImage[i].update();
+    }
+
+    else if (myGameArea.frameNo > 1800) {
+        bombImage[i].x += -6;
+        bombImage[i].update();
+    }
+  }
+
+  for (i=0;i < birdImage.length;i+=1) {    
+    if (myGameArea.frameNo >=1000 && myGameArea.frameNo <= 1800) {
+      birdImage[i].x += -4;
+      birdImage[i].update();
+    }
+
+    else if (myGameArea.frameNo > 1800) {
+      birdImage[i].x += -6;
+      birdImage[i].update();
+    }
+  }
+
+  for (i=0;i < birdImage2.length;i+=1) {    
+    if (myGameArea.frameNo >= 1800) {
+      birdImage2[i].x += -6;
+      birdImage2[i].update();
+    }
+  }
+
+  for (i=0;i < cartoonBox.length;i+=1) {    
+    if (myGameArea.frameNo >=3000) {
+      cartoonBox[i].x += -6;
+      cartoonBox[i].update();
+    }
+  }
+
+  for (i=0;i < anotherBox.length;i+=1) {    
+    if (myGameArea.frameNo >=3000) {
+      anotherBox[i].x += -6;
+      anotherBox[i].update();
+    }
+  }
+
+
+
+
+  if (myGameArea.frameNo >=1000 && myGameArea.frameNo < 1150) {
+    document.getElementById("message").innerHTML="Stage 1";
+    
+  }
+
+  else if (myGameArea.frameNo >=1150 &&  myGameArea.frameNo < 1300) {
+    document.getElementById("message").style.display="none";
+  }
+
+  else if (myGameArea.frameNo >=1800 && myGameArea.frameNo < 1950) {
+    document.getElementById("message2").innerHTML="Stage 2";
+  }
+
+  else if (myGameArea.frameNo >=1950 &&  myGameArea.frameNo < 2100) {
+    document.getElementById("message2").style.display="none";
+  }
+
+  else if (myGameArea.frameNo >=3000 &&  myGameArea.frameNo < 3150) {
+    document.getElementById("message3").innerHTML="Stage 3";
+  }
+
+  else if (myGameArea.frameNo >=3150 &&  myGameArea.frameNo < 3250) {
+    document.getElementById("message3").style.display="none";
+  }
+
+  else if (myGameArea.frameNo >=4000 &&  myGameArea.frameNo < 4150) {
+    document.getElementById("message4").innerHTML ="Stage 4";
+  }
+
+  else if (myGameArea.frameNo >=4000 &&  myGameArea.frameNo < 4150) {
+    document.getElementById("message4").innerHTML ="Stage 5";
+  }
+
+  else if (myGameArea.frameNo >=4150 &&  myGameArea.frameNo < 4250) {
+    document.getElementById("message4").style.display="none";
+  }
+
+
+
+
+ 
+
+ 
+
+  function text(txt,fnt,a,b,c) {
+      myGameArea.context.fillStyle=c;
+      myGameArea.context.font=fnt;
+      myGameArea.context.fillText(txt,a,b);
+  }
+
+
+  
+
+
+
+  myScore.text = "SCORE: " + myGameArea.frameNo;
+  myScore.update();
+
+  myGamePiece.newPos(); 
+  myGamePiece.update();
+
+  myGamePiece.speedX = 0;
+    myGamePiece.speedY = 0;    
+    if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -3; }
+    if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 3; }
+    if (myGameArea.key && myGameArea.key== 38) {myGamePiece.speedY = -3; }
+    if (myGameArea.key && myGameArea.key ==40 ) {myGamePiece.speedY = 3; }
+
+    myGamePiece.newPos(); 
+  myGamePiece.update();
+  
+  
+}
+
+
+function resetButton() {
+    location.reload();
+  }
+
+
+</script>
+<form id="myForm">
+  <input id="reset" type="button" onclick="resetButton()" value="Reset">
+</form>
+
+
+  <p id="message">
+  </p>
+
+  <p id="message2">
+  </p>
+
+  <p id="message3">
+  </p>
+
+  <p id="message4">
+  </p>
+
+
+</body>
+</html>
