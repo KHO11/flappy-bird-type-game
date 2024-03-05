@@ -1,6 +1,7 @@
 # flappy-bird-type-game
 
 A flappy bird type game created with html, css. A web game application where as the user, the player has to avoid getting hit by obstacles meeting their way.
+The keys are used to move the bird in the direction you want it to be.
 
 # Lessons learned
 
